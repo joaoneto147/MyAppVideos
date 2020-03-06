@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/widgets/movie_detail.widget.dart';
@@ -23,6 +21,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  _getMovies(){
+    
+    Movie movie = Movie();
+    movie.getTrendingMovies();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +36,10 @@ class _HomeState extends State<Home> {
         child: Column(
           children: <Widget>[
             SizedBox(height: 25),
+            RaisedButton(
+              child: Text("Get Movies Test"),
+              onPressed: () => _getMovies()
+            ),
             Container(               
               margin: const EdgeInsets.symmetric(                
                 horizontal: 10.0,
