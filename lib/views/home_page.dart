@@ -1,7 +1,11 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/widgets/movie_detail.widget.dart';
-import 'package:my_app/models/movie_model.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:my_app/controllers/movie_controller.dart';
+import 'package:my_app/widgets/movie_item.dart';
+import 'package:provider/provider.dart';
+
+import 'movie_detail.dart';
 
 final iconTextStyle = const TextStyle(
   color: Colors.red
@@ -20,15 +24,17 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
-  _getMovies(){
-    
-    Movie movie = Movie();
-    movie.getTrendingMovies();
-  }
-  
+class _HomeState extends State<Home> { 
   @override
   Widget build(BuildContext context) {
+    var _movieController = Provider.of<MovieController>(context);
+    _movieController.fetchMoviesRanked();    
+    
+    reloadMovies(){  
+      _movieController.api = null; 
+      _movieController.fetchMoviesRanked();
+    }
+
     return Scaffold(
       body: Container(
         color: Color(0xFF141A32),
@@ -38,7 +44,7 @@ class _HomeState extends State<Home> {
             SizedBox(height: 25),
             RaisedButton(
               child: Text("Get Movies Test"),
-              onPressed: () => _getMovies()
+              onPressed: () => reloadMovies()
             ),
             Container(               
               margin: const EdgeInsets.symmetric(                
@@ -97,12 +103,37 @@ class _HomeState extends State<Home> {
             ),
             
             Expanded(              
-              child: ListView.builder(
-                itemBuilder: (BuildContext ctxt, int index){
-                  return MovieDetailWidget(movies[index]);
-                },
-                itemCount: movies.length
-              ),
+              child: Observer(
+                name: 'pagehome',
+                builder: (_) => (_movieController.api != null)
+                  ? Container(
+                    child: ListView.builder(
+                      itemBuilder: (context, index){
+                        return GestureDetector(
+                          child: Hero( 
+                            tag: index,
+                            child: MovieDetailWidget(                                                        
+                              image: _movieController.api.movie[index].image,
+                              title: _movieController.api.movie[index].title, 
+                              rating: _movieController.api.movie[index].rating, 
+                              movieCountry: _movieController.api.movie[index].movieCountry, 
+                              directorName: _movieController.api.movie[index].directorName
+                            )                            
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => MovieDetail(heroTag: index)
+                            ));
+                          }
+                        );
+                      },
+                      itemCount: _movieController.api.movie.length
+                    ),
+                  )
+                  : Center(
+                    child: CircularProgressIndicator()
+                  )
+              )
             )
           ],
         ),

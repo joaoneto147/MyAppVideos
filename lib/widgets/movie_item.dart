@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/models/movie_model.dart';
 import 'package:rating_bar/rating_bar.dart';
 
 final baseTextStyle = const TextStyle(
@@ -23,46 +22,52 @@ final subHeaderTextStyle = regularTextStyle.copyWith(
 );
 
 class MovieDetailWidget extends StatelessWidget {
-  final Movie movie;
-  MovieDetailWidget(this.movie);
+  final image;
+  final title;
+  final rating;
+  final movieCountry;
+  final directorName;
+  final movieThumbnailWidth = 120.0;  
   
-  @override
-  Widget build(BuildContext context) {      
-    final movieThumbnail = Container(      
-      margin: EdgeInsets.symmetric(    
-        horizontal: 20
-      ),
-      child: Image.asset(
-        movie.image,
-        height: 180.0,
-        width: 120.0
+  Widget movieThumbnail() {
+    return Container(      
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: 150,
+            width: 120,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(image)
+              )
+            )
+          ),
+
+          SizedBox(height: 10)
+        ],
       )
     );
+  }
 
-    final movieCard = Container(        
-      height: 124.0,
-      margin: EdgeInsets.only(top: 70),
-      decoration: BoxDecoration(
-        color: Color(0XFF1E2747),    
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(3.0)
-      ),
-    );
-
-    final descriptionMovie = Container(
-      margin: EdgeInsets.fromLTRB(165.0, 70.0, 16.0, 16.0),  
+  Widget descriptionMovie(){
+    return Container(
+      margin: EdgeInsets.fromLTRB(movieThumbnailWidth + 20, 5, 2, 2),  
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 4.0),
-          Text(movie.title,
-            style: headerTextStyle,
+        children: <Widget>[          
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: headerTextStyle
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           Row(
             children: <Widget>[
               RatingBar.readOnly(
-                initialRating: movie.rating/2,                
+                initialRating: rating/2,                
                 filledIcon: Icons.star,
                 emptyIcon: Icons.star_border,
                 halfFilledIcon: Icons.star_half,
@@ -74,7 +79,7 @@ class MovieDetailWidget extends StatelessWidget {
               ),
               SizedBox(width: 10),
               Text(
-                movie.rating.toString(),
+                rating.toString(),                
                 style: TextStyle(
                   color: Colors.amber.shade400
                 ),
@@ -82,19 +87,35 @@ class MovieDetailWidget extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          Text(movie.movieCountry,
+          Text(movieCountry,
             style: subHeaderTextStyle
-
           ),
           Container(height: 10.0),
-          Text("Director: " + movie.directorName,
+          Text("Director: " + directorName,
             style: subHeaderTextStyle
           )
         ],
       ),
     );
+  }      
+ 
+  const MovieDetailWidget({this.image, this.title, this.rating, this.movieCountry, this.directorName});
 
-    return Container(      
+  @override
+  Widget build(BuildContext context) {      
+
+    final movieCard = Container(              
+      height: 140,
+      margin: EdgeInsets.only(top: 25),
+      decoration: BoxDecoration(
+        color: Color(0XFF1E2747),    
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(3.0)
+      ),
+      child: descriptionMovie()
+    );
+
+    return Container(            
       margin: const EdgeInsets.symmetric(
          vertical: 10.0,
          horizontal: 10.0,
@@ -102,12 +123,10 @@ class MovieDetailWidget extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           movieCard,
-          movieThumbnail,
-          descriptionMovie
+          movieThumbnail()
         ],
           
       ),
     ); 
-
   }  
 }
