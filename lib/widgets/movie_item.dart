@@ -21,6 +21,14 @@ final subHeaderTextStyle = regularTextStyle.copyWith(
   fontSize: 14.0
 );
 
+EdgeInsets getMargin(double mult){    
+  mult = (mult == null) ? 1: mult;
+  return EdgeInsets.symmetric(    
+    horizontal: 10 * mult,
+    vertical: 10 * mult
+  );
+}
+
 class MovieDetailWidget extends StatelessWidget {
   final image;
   final title;
@@ -28,6 +36,7 @@ class MovieDetailWidget extends StatelessWidget {
   final movieCountry;
   final directorName;
   final movieThumbnailWidth = 120.0;  
+  final margin;
   
   Widget movieThumbnail() {
     return Container(      
@@ -79,10 +88,11 @@ class MovieDetailWidget extends StatelessWidget {
               ),
               SizedBox(width: 10),
               Text(
-                rating.toString(),                
+                rating.toString(),                                
                 style: TextStyle(
-                  color: Colors.amber.shade400
-                ),
+                  color: Colors.amber.shade400,
+                  fontWeight: FontWeight.bold
+                )
               )
             ],
           ),
@@ -99,7 +109,7 @@ class MovieDetailWidget extends StatelessWidget {
     );
   }      
  
-  const MovieDetailWidget({this.image, this.title, this.rating, this.movieCountry, this.directorName});
+  const MovieDetailWidget({this.image, this.title, this.rating, this.movieCountry, this.directorName, this.margin});
 
   @override
   Widget build(BuildContext context) {      
@@ -116,10 +126,7 @@ class MovieDetailWidget extends StatelessWidget {
     );
 
     return Container(            
-      margin: const EdgeInsets.symmetric(
-         vertical: 10.0,
-         horizontal: 10.0,
-      ),
+      margin: getMargin(margin),
       child: Stack(
         children: <Widget>[
           movieCard,

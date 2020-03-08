@@ -26,23 +26,6 @@ mixin _$MovieController on _MovieControllerBase, Store {
     }, _$apiAtom, name: '${_$apiAtom.name}_set');
   }
 
-  final _$testeAtom = Atom(name: '_MovieControllerBase.teste');
-
-  @override
-  int get teste {
-    _$testeAtom.context.enforceReadPolicy(_$testeAtom);
-    _$testeAtom.reportObserved();
-    return super.teste;
-  }
-
-  @override
-  set teste(int value) {
-    _$testeAtom.context.conditionallyRunInAction(() {
-      super.teste = value;
-      _$testeAtom.reportChanged();
-    }, _$testeAtom, name: '${_$testeAtom.name}_set');
-  }
-
   final _$_MovieControllerBaseActionController =
       ActionController(name: '_MovieControllerBase');
 
@@ -58,7 +41,7 @@ mixin _$MovieController on _MovieControllerBase, Store {
 
   @override
   String toString() {
-    final string = 'api: ${api.toString()},teste: ${teste.toString()}';
+    final string = 'api: ${api.toString()}';
     return '{$string}';
   }
 }

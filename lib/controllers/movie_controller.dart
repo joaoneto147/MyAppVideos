@@ -12,18 +12,20 @@ abstract class _MovieControllerBase with Store {
   @observable
   MovieApi api;
 
-  @observable
-  int teste;
-
   @action
   fetchMoviesRanked(){
     loadMoviesTrending().then((moviesTrending) {
-      api = null;
       api = moviesTrending;
-      teste = 123;
+      if (api != null){
+        api.movie.forEach((f){
+          loadDetailMovie(f);
+        });
+      }
     });
+
   }
 
+  @action
   Future<MovieApi> loadMoviesTrending () async{
     try {      
       final response = await http.get(URL_POPULAR_MOVIE);
@@ -35,19 +37,13 @@ abstract class _MovieControllerBase with Store {
     }
   }
 
-  getMoviesDetails (List<Movie> movies){
-    
-    void _getMoviesDetails (Movie mv) async {
-      http.Response response = await http.get(
-        URL_BASE        
-      );
-      if (response.statusCode == 200){
-        Map<String, dynamic> dadosJson = json.decode(response.body);       
-      }
-    }
-
-    movies.forEach((movie) => _getMoviesDetails(movie));
-  }  
+  @action
+  Future loadDetailMovie (Movie movie) async {
+    final movieId = movie.id;    
+    final response = await http.get(getURL(URL_MOVIE + "$movieId", ["api_key=" + MOVIE_DB_API_KEY, "language=pt-BR", "append_to_response=credits"]));
+    var json = jsonDecode(response.body);
+    api.getDetailsFromJson(json, movie);
+  }
 
   Widget getImage(imageURL){
     return Image(

@@ -28,10 +28,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     var _movieController = Provider.of<MovieController>(context);
-    _movieController.fetchMoviesRanked();    
-    
-    reloadMovies(){  
-      _movieController.api = null; 
+    _movieController.fetchMoviesRanked();   
+        
+    reloadMovies(){        
       _movieController.fetchMoviesRanked();
     }
 
@@ -105,20 +104,24 @@ class _HomeState extends State<Home> {
             Expanded(              
               child: Observer(
                 name: 'pagehome',
-                builder: (_) => (_movieController.api != null)
+                builder: (_) => (_movieController.api != null && _movieController.api.movie != null)
                   ? Container(
                     child: ListView.builder(
                       itemBuilder: (context, index){
                         return GestureDetector(
                           child: Hero( 
                             tag: index,
-                            child: MovieDetailWidget(                                                        
-                              image: _movieController.api.movie[index].image,
-                              title: _movieController.api.movie[index].title, 
-                              rating: _movieController.api.movie[index].rating, 
-                              movieCountry: _movieController.api.movie[index].movieCountry, 
-                              directorName: _movieController.api.movie[index].directorName
-                            )                            
+                            child: Material(
+                              elevation: 1,
+                              color: Color(0xFF141A32),
+                              child: MovieDetailWidget(                                                        
+                                image: _movieController.api.movie[index].image,
+                                title: _movieController.api.movie[index].title, 
+                                rating: _movieController.api.movie[index].rating, 
+                                movieCountry: _movieController.api.movie[index].movieCountry, 
+                                directorName: _movieController.api.movie[index].directorName
+                              )
+                            )
                           ),
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
