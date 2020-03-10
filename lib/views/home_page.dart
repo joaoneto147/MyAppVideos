@@ -1,37 +1,46 @@
-import 'dart:js';
-
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/widgets/movie_detail.widget.dart';
-import 'package:my_app/models/movie_model.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:my_app/controllers/movie_controller.dart';
+import 'package:my_app/widgets/movie_item.dart';
+
+import 'movie_detail.dart';
 
 final iconTextStyle = const TextStyle(
   color: Colors.red
 );
-
-const TITLE = "O Chamado da Floresta";
-const SINOPSE = 
-  "Depois de anos vivendo como um cachorro de estimação na casa de uma família na " +
-  "Califórnia, Buck precisa entrar em contato com os seus instintos mais selvagens " + 
-  "para conseguir sobreviver em um ambiente hostil como o Alaska. Com o tempo, seu " +
-  "lado feroz se desenvolve e ele se torna o grande líder de sua matilha. Baseado no " +
-  "livro homônimo de Jack London, lançado em 1903.";   
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> { 
+  MovieController _movieController;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _movieController = GetIt.instance<MovieController>();
+    if (_movieController.api == null) {
+      _movieController.fetchMoviesRanked();
+    }
+  }  
+
+  @override
+  Widget build(BuildContext context) {       
+    reloadMovies(){        
+      _movieController.fetchMoviesRanked();
+    }
+
     return Scaffold(
       body: Container(
         color: Color(0xFF141A32),
         padding: EdgeInsets.only(bottom: 10),        
         child: Column(
           children: <Widget>[
-            SizedBox(height: 25),
+            SizedBox(height: 30),
             Container(               
               margin: const EdgeInsets.symmetric(                
                 horizontal: 10.0,
@@ -89,12 +98,41 @@ class _HomeState extends State<Home> {
             ),
             
             Expanded(              
-              child: ListView.builder(
-                itemBuilder: (BuildContext ctxt, int index){
-                  return MovieDetailWidget(movies[index]);
-                },
-                itemCount: movies.length
-              ),
+              child: Observer(
+                name: 'pagehome',
+                builder: (_) => (_movieController.api != null && _movieController.api.movie != null)
+                  ? Container(
+                    child: ListView.builder(
+                      itemBuilder: (context, index){
+                        return GestureDetector(
+                          child: Hero( 
+                            tag: "movie" + _movieController.api.movie[index].id.toString(),
+                            child: Material(
+                              elevation: 1,
+                              color: Color(0xFF141A32),
+                              child: MovieDetailWidget(                                                        
+                                image: _movieController.api.movie[index].image,
+                                title: _movieController.api.movie[index].title, 
+                                rating: _movieController.api.movie[index].rating, 
+                                movieCountry: _movieController.api.movie[index].movieCountry, 
+                                directorName: _movieController.api.movie[index].directorName
+                              )
+                            )
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => MovieDetail(heroTag: index)
+                            ));
+                          }
+                        );
+                      },
+                      itemCount: _movieController.api.movie.length
+                    ),
+                  )
+                  : Center(
+                    child: CircularProgressIndicator()
+                  )
+              )
             )
           ],
         ),
