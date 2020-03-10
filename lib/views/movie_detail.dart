@@ -128,7 +128,6 @@ class _MovieDetailState extends State<MovieDetail> {
                   Container(
                     height: 160,
                     width: 120,
-                    // color: Colors.blue,
                     child: _movie.cast[index].profilePath != null
                         ? FadeInImage(
                           image: NetworkImage(_movie.cast[index].profilePath),
@@ -155,6 +154,7 @@ class _MovieDetailState extends State<MovieDetail> {
 
   Widget bannerTop() {
     return Stack(
+      alignment: Alignment.center,
       children: <Widget>[
         Container(
           height: 250,

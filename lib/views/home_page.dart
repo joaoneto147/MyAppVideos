@@ -1,174 +1,61 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
-import 'package:my_app/controllers/movie_controller.dart';
-import 'package:my_app/widgets/movie_item.dart';
+import 'package:my_app/views/ranking.dart';
 
-import 'movie_detail.dart';
-
-final iconTextStyle = const TextStyle(
-  color: Colors.red
-);
-
-class Home extends StatefulWidget {
+//temp view
+class Yellow extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _YellowState createState() => _YellowState();
 }
 
-class _HomeState extends State<Home> { 
-  MovieController _movieController;
-
+class _YellowState extends State<Yellow> {
   @override
-  void initState() {
-    super.initState();
-    _movieController = GetIt.instance<MovieController>();
-    if (_movieController.api == null) {
-      _movieController.fetchMoviesRanked();
-    }
-  }  
-
-  @override
-  Widget build(BuildContext context) {       
-    reloadMovies(){        
-      _movieController.fetchMoviesRanked();
-    }
-
-    return Scaffold(
-      body: Container(
-        color: Color(0xFF141A32),
-        padding: EdgeInsets.only(bottom: 10),        
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: 30),
-            Container(               
-              margin: const EdgeInsets.symmetric(                
-                horizontal: 10.0,
-              ),
-              child: Row(                            
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: Text(                      
-                      "Ranking",                      
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 40
-                      ),
-                    ),
-                  ), 
-                  Expanded(                    
-                    child: Container(
-                      width: 40,                      
-                      height: 30,  
-                      decoration: new BoxDecoration(
-                        color: new Color(0XFF1E2747),    
-                        shape: BoxShape.rectangle,
-                        borderRadius: new BorderRadius.circular(3.0)
-                      ),
-                      child: Row(                        
-                        children: <Widget>[
-                          Icon(Icons.search, color: Colors.grey),
-                          Expanded(                            
-                            child: TextField(
-                              textAlign: TextAlign.start,
-                              expands: false,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 20
-                                ),
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(vertical: 8),
-                                border: InputBorder.none,                                                            
-                                hintText: "Search",
-                                hintStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 20
-                                )
-                              )
-                            )
-                          )
-                        ],
-                      ),
-                    )
-                  )
-                ],
-              ),
-            ),
-            
-            Expanded(              
-              child: Observer(
-                name: 'pagehome',
-                builder: (_) => (_movieController.api != null && _movieController.api.movie != null)
-                  ? Container(
-                    child: ListView.builder(
-                      itemBuilder: (context, index){
-                        return GestureDetector(
-                          child: Hero( 
-                            tag: "movie" + _movieController.api.movie[index].id.toString(),
-                            child: Material(
-                              elevation: 1,
-                              color: Color(0xFF141A32),
-                              child: MovieDetailWidget(                                                        
-                                image: _movieController.api.movie[index].image,
-                                title: _movieController.api.movie[index].title, 
-                                rating: _movieController.api.movie[index].rating, 
-                                movieCountry: _movieController.api.movie[index].movieCountry, 
-                                directorName: _movieController.api.movie[index].directorName
-                              )
-                            )
-                          ),
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => MovieDetail(heroTag: index)
-                            ));
-                          }
-                        );
-                      },
-                      itemCount: _movieController.api.movie.length
-                    ),
-                  )
-                  : Center(
-                    child: CircularProgressIndicator()
-                  )
-              )
-            )
-          ],
-        ),
-      ),
-        
-      bottomNavigationBar: BottomNavigationBar(       
-        iconSize: 20,
-        selectedIconTheme: IconThemeData(color: Color(0xFF0083FF), size: 25),        
-        unselectedIconTheme: IconThemeData(color: Color(0xFF53719C), size: 20),
-        
-        fixedColor: Color(0xFF0083FF),
-        backgroundColor: Color(0xFF1E2747),
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            title: Text("Movie"),
-            icon: Icon(CommunityMaterialIcons.movie_roll)
-          ),
-          BottomNavigationBarItem(
-            title: Text("Ranking"),
-            icon: Icon(CommunityMaterialIcons.crown)
-          ),
-          BottomNavigationBarItem(
-            title: Text("Feed"),
-            icon: Icon(CommunityMaterialIcons.crown)
-          ),
-          BottomNavigationBarItem(
-            title: Text("More"),
-            icon: Icon(Icons.person)
-          )
-        ]
-      )
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.yellowAccent,
     );
   }
+}
 
-  
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  int _indiceAtual = 0;
   
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+          color: Colors.red,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          onTap: (currentIndex){
+            print(currentIndex);
+          },
+            iconSize: 20,
+            selectedIconTheme:
+                IconThemeData(color: Color(0xFF0083FF), size: 25),
+            unselectedIconTheme:
+                IconThemeData(color: Color(0xFF53719C), size: 20),
+            fixedColor: Color(0xFF0083FF),
+            backgroundColor: Color(0xFF1E2747),
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                  title: Text("Movie"),
+                  icon: Icon(CommunityMaterialIcons.movie_roll)),
+              BottomNavigationBarItem(
+                  title: Text("Ranking"),
+                  icon: Icon(CommunityMaterialIcons.crown)),
+              BottomNavigationBarItem(
+                  title: Text("Feed"),
+                  icon: Icon(CommunityMaterialIcons.crown)),
+              BottomNavigationBarItem(
+                  title: Text("More"), icon: Icon(Icons.person))
+            ]));
+  }
 }
