@@ -1,103 +1,226 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:my_app/controllers/movie_controller.dart';
 import 'package:my_app/models/movie_model.dart';
 import 'package:my_app/widgets/movie_item.dart';
-import 'package:provider/provider.dart';
+
+const TEMP =
+    "Peter Parker and his friends go on summer holidays to Europe. However, the friends will hardly be able to rest - Peter will have to agree to help Nick Fury uncover the mystery of creatures that cause natural disasters and destruction throughout the continent.";
+
+enum StatusSynopse { EXPANDED, COLLAPSE }
+
+final iconTextStyle = const TextStyle(color: Colors.blue);
+final bodySynopsisTextStyle = const TextStyle(color: Colors.grey);
 
 class MovieDetail extends StatefulWidget {
   final heroTag;
 
-  MovieDetail({this.heroTag});  
-  
+  MovieDetail({this.heroTag});
+
   @override
   _MovieDetailState createState() => _MovieDetailState();
 }
 
 class _MovieDetailState extends State<MovieDetail> {
-
   MovieController _movieController;
   Movie _movie;
+  double movieWidth;
+  double movieHeight;
 
-  Widget banner(){
+  @override
+  void initState() {
+    super.initState();
+    _movieController = GetIt.instance<MovieController>();
+  }
+
+  Widget detailsMovie() {
     return Container(
-      height: 300,
-      width: 900,
-      color: Colors.blue,
-      child: Image.network(_movie.image, fit: BoxFit.fill),
+      margin: EdgeInsets.symmetric(horizontal: 25, vertical: 150),
+      height: 180,
+      width: movieWidth - 50,
+      child: MovieDetailWidget(
+          image: _movie.image,
+          title: _movie.title,
+          rating: _movie.rating,
+          movieCountry: _movie.movieCountry,
+          directorName: _movie.directorName),
     );
   }
 
-  Widget detailsMovie(){
-    return Container(
-      height: 483,
-      width: 900,
-      color: Colors.red
+  Widget getWidgetSynopsis(
+      String textBody, String textIcon, IconData icon, int maxLine) {
+    return Column(
+      children: <Widget>[
+        maxLine > 0
+            ? Text(
+                textBody,
+                overflow: TextOverflow.ellipsis,
+                maxLines: maxLine,
+                textAlign: TextAlign.justify,
+                style: bodySynopsisTextStyle,
+              )
+            : Text(textBody,
+                textAlign: TextAlign.justify, style: bodySynopsisTextStyle),
+        ExpandableButton(
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Text(textIcon, style: iconTextStyle),
+            Icon(icon, color: Colors.blue),
+          ],
+        )),
+      ],
     );
   }
-  
+
+  Widget synopsis() {
+    return ExpandableTheme(
+      data: ExpandableThemeData(),
+      child: ExpandableNotifier(
+        child: Column(
+          children: [
+            Expandable(
+              collapsed: getWidgetSynopsis(
+                _movie.overview,
+                "More",
+                Icons.keyboard_arrow_down,
+                3,
+              ),
+              expanded: getWidgetSynopsis(
+                _movie.overview,
+                "Hide",
+                Icons.keyboard_arrow_up,
+                0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget textTitle(String text) {
+    return Text(
+      text,
+      style: TextStyle(fontSize: 25, color: Colors.white),
+      textAlign: TextAlign.start,
+    );
+  }
+
+  Widget castPanel() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        textTitle("Cast"),
+        SizedBox(height: 10),
+        Container(
+          height: 180,
+          child: ListView.separated(
+            separatorBuilder: (context, index) {
+              return SizedBox(height: 10, width: 10);
+            },
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    height: 160,
+                    width: 120,
+                    // color: Colors.blue,
+                    child: _movie.cast[index].profilePath != null
+                        ? FadeInImage(
+                          image: NetworkImage(_movie.cast[index].profilePath),
+                          fit: BoxFit.cover,
+                          placeholder: AssetImage('images/loading.gif'),
+                        )
+                        : Image.asset("images/imagenotfound.jpg",
+                            fit: BoxFit.fill),
+                  ),
+                  Text(
+                    _movie.cast[index].name,
+                    textAlign: TextAlign.start,
+                    style: bodySynopsisTextStyle,
+                  )
+                ],
+              );
+            },
+            itemCount: _movie.cast.length,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget bannerTop() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          height: 250,
+          width: 900,
+          child: Image.network(_movie.backdropPath, fit: BoxFit.fill),
+        ),
+        Positioned(
+          top: 0,
+          child: detailsMovie(),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.chevron_left),
+              color: Colors.white,
+              onPressed: () {},
+            ),
+            Text("Details",
+                style: TextStyle(color: Colors.white, fontSize: 18)),
+            IconButton(
+              icon: Icon(Icons.arrow_forward),
+              color: Colors.white,
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    _movieController = Provider.of<MovieController>(context);
     _movie = _movieController.getMovie(widget.heroTag);
-
-    return Scaffold(      
-      body: 
-
-          Column(
-            children: <Widget>[                 
-            banner(),
-            detailsMovie(),
+    movieWidth = MediaQuery.of(context).size.width;
+    movieHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      backgroundColor: Color(0xFF151E40),
+      body: SingleChildScrollView(
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              child: detailsMovie(),
+            ),
+            Column(
+              children: <Widget>[
+                bannerTop(),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 60),
+                      textTitle("Synopsis"),
+                      SizedBox(height: 10),
+                      synopsis(),
+                      castPanel()
+                    ],
+                  ),
+                )
+              ],
+            ),
           ],
-          )
-
+        ),
+      ),
     );
   }
 }
-
-            // Container(
-            //   margin: EdgeInsets.symmetric(
-            //     vertical: 10,
-            //     horizontal: 20
-            //   ),
-            //   child: Hero( 
-            //     tag: widget.heroTag,
-            //     child: Material(
-            //       color: Colors.red,
-            //       child: MovieDetailWidget(
-            //         image: _movie.image,
-            //         title: _movie.title, 
-            //         rating: _movie.rating, 
-            //         movieCountry: _movie.movieCountry, 
-            //         directorName: _movie.directorName,
-            //         margin: 3.0,
-            //       )
-            //     )
-            //   )
-            // )
-
-
-// AppBar(
-//             centerTitle: true,
-//             title: Opacity(
-//               opacity: 0.8,
-//               child: Text(
-//                 "Details",
-//                 style: TextStyle(
-//                     fontFamily: 'Google',
-//                     color: Colors.white,
-//                     fontSize: 18,
-//                     fontWeight: FontWeight.bold),
-//               ),
-//             ),
-//             backgroundColor: Colors.purple,
-//             elevation: 0,          
-            
-//             brightness: Brightness.dark,
-//             leading: IconButton(
-//               icon: Icon(Icons.arrow_back),
-//               color: Colors.white,
-//               onPressed: () {
-//                 Navigator.of(context).pop(null);
-//               },
-//             )
-//           ),

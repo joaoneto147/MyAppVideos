@@ -1,9 +1,9 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 import 'package:my_app/controllers/movie_controller.dart';
 import 'package:my_app/widgets/movie_item.dart';
-import 'package:provider/provider.dart';
 
 import 'movie_detail.dart';
 
@@ -11,25 +11,25 @@ final iconTextStyle = const TextStyle(
   color: Colors.red
 );
 
-const TITLE = "O Chamado da Floresta";
-const SINOPSE = 
-  "Depois de anos vivendo como um cachorro de estimação na casa de uma família na " +
-  "Califórnia, Buck precisa entrar em contato com os seus instintos mais selvagens " + 
-  "para conseguir sobreviver em um ambiente hostil como o Alaska. Com o tempo, seu " +
-  "lado feroz se desenvolve e ele se torna o grande líder de sua matilha. Baseado no " +
-  "livro homônimo de Jack London, lançado em 1903.";   
-
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> { 
+  MovieController _movieController;
+
   @override
-  Widget build(BuildContext context) {
-    var _movieController = Provider.of<MovieController>(context);
-    _movieController.fetchMoviesRanked();   
-        
+  void initState() {
+    super.initState();
+    _movieController = GetIt.instance<MovieController>();
+    if (_movieController.api == null) {
+      _movieController.fetchMoviesRanked();
+    }
+  }  
+
+  @override
+  Widget build(BuildContext context) {       
     reloadMovies(){        
       _movieController.fetchMoviesRanked();
     }
@@ -40,11 +40,7 @@ class _HomeState extends State<Home> {
         padding: EdgeInsets.only(bottom: 10),        
         child: Column(
           children: <Widget>[
-            SizedBox(height: 25),
-            RaisedButton(
-              child: Text("Get Movies Test"),
-              onPressed: () => reloadMovies()
-            ),
+            SizedBox(height: 30),
             Container(               
               margin: const EdgeInsets.symmetric(                
                 horizontal: 10.0,
@@ -110,7 +106,7 @@ class _HomeState extends State<Home> {
                       itemBuilder: (context, index){
                         return GestureDetector(
                           child: Hero( 
-                            tag: index,
+                            tag: "movie" + _movieController.api.movie[index].id.toString(),
                             child: Material(
                               elevation: 1,
                               color: Color(0xFF141A32),

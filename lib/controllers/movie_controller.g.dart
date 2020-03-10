@@ -26,17 +26,26 @@ mixin _$MovieController on _MovieControllerBase, Store {
     }, _$apiAtom, name: '${_$apiAtom.name}_set');
   }
 
-  final _$_MovieControllerBaseActionController =
-      ActionController(name: '_MovieControllerBase');
+  final _$fetchMoviesRankedAsyncAction = AsyncAction('fetchMoviesRanked');
 
   @override
-  dynamic fetchMoviesRanked() {
-    final _$actionInfo = _$_MovieControllerBaseActionController.startAction();
-    try {
-      return super.fetchMoviesRanked();
-    } finally {
-      _$_MovieControllerBaseActionController.endAction(_$actionInfo);
-    }
+  Future fetchMoviesRanked() {
+    return _$fetchMoviesRankedAsyncAction.run(() => super.fetchMoviesRanked());
+  }
+
+  final _$loadMoviesTrendingAsyncAction = AsyncAction('loadMoviesTrending');
+
+  @override
+  Future<MovieApi> loadMoviesTrending() {
+    return _$loadMoviesTrendingAsyncAction
+        .run(() => super.loadMoviesTrending());
+  }
+
+  final _$loadDetailMovieAsyncAction = AsyncAction('loadDetailMovie');
+
+  @override
+  Future<MovieApi> loadDetailMovie() {
+    return _$loadDetailMovieAsyncAction.run(() => super.loadDetailMovie());
   }
 
   @override

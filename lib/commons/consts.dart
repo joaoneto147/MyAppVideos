@@ -1,3 +1,5 @@
+const URL_IMAGES = 'https://image.tmdb.org/t/p/w500/';
+
 const genresJson = """
 {
   "genres": [

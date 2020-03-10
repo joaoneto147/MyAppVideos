@@ -1,8 +1,7 @@
 import 'package:my_app/models/movie_model.dart';
 
-const MOVIE_DB_API_KEY = 'd538139cb8454e145910b135dae4a1f1';
+const MOVIE_DB_API_KEY = 'YOU_API_KEY';
 const URL_BASE = 'https://api.themoviedb.org/3/';
-const URL_IMAGES = 'https://image.tmdb.org/t/p/w500/';
 
 const URL_TRENDING = URL_BASE + "trending/movie/week" + "?api_key=" + MOVIE_DB_API_KEY + "&language=pt-BR" + "&include_image_language=en,pt,null";
 const URL_POPULAR_MOVIE = URL_BASE + "movie/popular" + "?api_key=" + MOVIE_DB_API_KEY + "&language=pt-BR" + "&page=1" + "&region=BR";
@@ -37,8 +36,8 @@ class MovieApi {
   }
 
 
-  getDetailsFromJson(Map<String, dynamic> json, Movie movie){
-    movie.fillMovieDetail(json);
+  Future getDetailsFromJson(Map<String, dynamic> json, Movie movie) async {
+    await movie.fillMovieDetail(json);
   }  
 }
 

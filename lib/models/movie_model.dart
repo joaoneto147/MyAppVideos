@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:my_app/commons/api_movie.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_app/commons/consts.dart';
 
 class Genres {
   int id;
@@ -50,7 +51,7 @@ class Cast {
     id = json['id'];
     name = json['name'];
     order = json['order'];
-    profilePath = json['profile_path'];
+    profilePath = json['profile_path'] != null ? URL_IMAGES + json['profile_path'] : json['profile_path'];
   }
 
   Map<String, dynamic> toJson() {
@@ -92,7 +93,7 @@ class Crew {
     id = json['id'];
     job = json['job'];
     name = json['name'];
-    profilePath = json['profile_path'];
+    profilePath = json['profile_path'] != null ? URL_IMAGES + json['profile_path'] : json['profile_path'];
   }
 
   Map<String, dynamic> toJson() {
@@ -116,23 +117,27 @@ class Movie{
   String directorName;
   String movieCountry;
   String releaseDate;
+  String overview;
+  String backdropPath;
   List<Genres> genres;
   List<Cast> cast;
   List<Crew> crew;
   
-  Movie({this.id, this.image, this.title, this.rating, this.directorName, this.movieCountry, this.releaseDate});
+  Movie({this.id, this.image, this.title, this.rating, this.directorName, this.movieCountry, this.releaseDate, this.overview, this.backdropPath});
     
   Movie.fromJson(Map<String, dynamic> json){
     id = json['id'];            
     image = URL_IMAGES + json['poster_path'];
     title = json['title'];      
-    rating = json['vote_average'];       
-    releaseDate = json['release_date'];    
-    movieCountry = "United States";
+    rating = double.parse(json['vote_average'].toString());       
     directorName = "";
+    movieCountry = "United States";
+    releaseDate = json['release_date'];    
+    overview = json['overview'];
+    backdropPath = URL_IMAGES + json['backdrop_path'];
   }
 
-  fillMovieDetail(Map<String, dynamic> json){
+  Future fillMovieDetail(Map<String, dynamic> json) async{
     //TO-DO refactor to list in future
     if (json['genres'] != null) {
       this.genres = new List<Genres>();
