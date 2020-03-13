@@ -34,13 +34,7 @@ class MovieDetailWidget extends StatelessWidget {
               height: 150,
               width: 120,
               child: FadeInImage(placeholder: AssetImage('images/loading.gif'), image: NetworkImage(image)),
-              // decoration: BoxDecoration(
-              //   image: DecorationImage(
-              //     image: NetworkImage(image)
-              //   )
             ),
-            // ),
-
             SizedBox(height: 10)
           ],
         ));

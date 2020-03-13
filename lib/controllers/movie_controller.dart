@@ -1,48 +1,62 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:my_app/commons/api_movie.dart';
-import 'package:http/http.dart' as http;
+import 'package:my_app/models/movie_model.dart';
 part 'movie_controller.g.dart';
 
 class MovieController = _MovieControllerBase with _$MovieController;
 
 abstract class _MovieControllerBase with Store {
+   
   @observable
-  MovieApi api;
-
-  MovieApi tempApi;
+  List<Movie> movies;  
 
   @action
-  fetchMoviesRanked() async {
-    tempApi = await loadMoviesTrending();
-    await loadDetailMovie();
+  getMoviesRanked(int page) async {    
+    try {
+      List<Movie> moviesReturn;
+      final response = await http.get(MovieApi.moviesRanked(page));
+      Map<String, dynamic> json = jsonDecode(response.body);
 
-    api = tempApi;
-  }
+      if (json['results'] != null) {
+        moviesReturn = new List<Movie>();
+        json['results'].forEach((v) {
+          moviesReturn.add(Movie.fromJson(v));
+        });
+      }
 
-  @action
-  Future<MovieApi> loadMoviesTrending () async{
-    try {      
-      final response = await http.get(URL_POPULAR_MOVIE);
-      var json = jsonDecode(response.body);
-      return MovieApi.fromJson(json);
+      for (Movie movie in moviesReturn){
+        movie.details = await _loadDetailMovie(movie.id);
+      }
+
+      // await moviesReturn.forEach((movie) async {
+        // movie.details = await _loadDetailMovie(movie.id);
+      // });
+
+      movies = moviesReturn;
+      // movies = await  loadMoviesDetails(moviesReturn);
     } catch (error, stacktrace) {
-      print("Exception occured: $error stackTrace: $stacktrace");
-      return null;
+      print("Exception occured: $error stackTrace: $stacktrace");    
     }
   }
 
-  @action
-  Future<MovieApi> loadDetailMovie() async {
-    for (var i = 0; i < tempApi.movie.length; i++) {
-      final movieId = tempApi.movie[i].id;    
-      final response = await http.get(getURL(URL_MOVIE + "$movieId", ["api_key=" + MOVIE_DB_API_KEY, "language=pt-BR", "append_to_response=credits"]));
-      var json = jsonDecode(response.body);
-      tempApi.movie[i].fillMovieDetail(json);
-    }
+  getMoviesUpComing() async {
 
-    return tempApi;
+  }
+
+  Future loadMoviesDetails(List<Movie> movieList) async {
+    movieList.forEach((movie) async {
+      movie.details = await _loadDetailMovie(movie.id);
+    });
+  }
+
+  Future<MovieDetails> _loadDetailMovie(int movieId) async {    
+    final response = await http.get(MovieApi.movieDatails(movieId));
+    var json = jsonDecode(response.body);
+    return MovieDetails.fromJson(json);
   }
 
   Widget getImage(imageURL){
@@ -52,7 +66,7 @@ abstract class _MovieControllerBase with Store {
   }
 
   getMovie(int index){
-    return api.movie[index];  
+    return movies[index];  
   }
 
 } 

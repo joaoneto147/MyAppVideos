@@ -1,7 +1,5 @@
-import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 import 'package:my_app/controllers/movie_controller.dart';
 import 'package:my_app/widgets/movie_item.dart';
 
@@ -22,9 +20,9 @@ class _RankingState extends State<Ranking> {
   @override
   void initState() {
     super.initState();
-    _movieController = GetIt.instance<MovieController>();
-    if (_movieController.api == null) {
-      _movieController.fetchMoviesRanked();
+    _movieController = MovieController();
+    if (_movieController.movies == null) {      
+      _movieController.getMoviesRanked(1);
     }
   }  
 
@@ -96,33 +94,33 @@ class _RankingState extends State<Ranking> {
             Expanded(              
               child: Observer(
                 name: 'pagehome',
-                builder: (_) => (_movieController.api != null && _movieController.api.movie != null)
+                builder: (_) => (_movieController.movies != null)
                   ? Container(
                     child: ListView.builder(
                       itemBuilder: (context, index){
                         return GestureDetector(
                           child: Hero( 
-                            tag: "movie" + _movieController.api.movie[index].id.toString(),
+                            tag: "movie" + _movieController.movies[index].id.toString(),
                             child: Material(
                               elevation: 1,
                               color: Color(0xFF141A32),
                               child: MovieDetailWidget(                                                        
-                                image: _movieController.api.movie[index].image,
-                                title: _movieController.api.movie[index].title, 
-                                rating: _movieController.api.movie[index].rating, 
-                                movieCountry: _movieController.api.movie[index].movieCountry, 
-                                directorName: _movieController.api.movie[index].directorName
+                                image: _movieController.movies[index].image,
+                                title: _movieController.movies[index].title, 
+                                rating: _movieController.movies[index].rating, 
+                                movieCountry: _movieController.movies[index].details.movieCountry, 
+                                directorName: _movieController.movies[index].details.directorName
                               )
                             )
                           ),
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => MovieDetail(heroTag: index)
+                              builder: (context) => MovieDetail(movieIndex: index, movieController: _movieController)
                             ));
                           }
                         );
                       },
-                      itemCount: _movieController.api.movie.length
+                      itemCount: _movieController.movies.length
                     ),
                   )
                   : Center(

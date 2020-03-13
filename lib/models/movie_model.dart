@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:my_app/commons/api_movie.dart';
-import 'package:http/http.dart' as http;
 import 'package:my_app/commons/consts.dart';
 
 class Genres {
@@ -114,61 +110,102 @@ class Movie{
   String image;
   String title;
   var rating;  
-  String directorName;
-  String movieCountry;
   String releaseDate;
   String overview;
   String backdropPath;
+  MovieDetails details;
+  
+  Movie({this.id, this.image, this.title, this.rating, this.releaseDate, this.overview, this.backdropPath});
+    
+  factory Movie.fromJson(Map<String, dynamic> json){
+    return Movie(    
+      id : json['id'],         
+      image : URL_IMAGES + json['poster_path'],
+      title : json['title'],
+      rating : double.parse(json['vote_average'].toString()),
+      releaseDate : json['release_date'],
+      overview : json['overview'],
+      backdropPath : URL_IMAGES + json['backdrop_path']
+    );
+  }
+}
+
+class MovieDetails {
+  String directorName;
+  String movieCountry;
   List<Genres> genres;
   List<Cast> cast;
   List<Crew> crew;
-  
-  Movie({this.id, this.image, this.title, this.rating, this.directorName, this.movieCountry, this.releaseDate, this.overview, this.backdropPath});
-    
-  Movie.fromJson(Map<String, dynamic> json){
-    id = json['id'];            
-    image = URL_IMAGES + json['poster_path'];
-    title = json['title'];      
-    rating = double.parse(json['vote_average'].toString());       
-    directorName = "";
-    movieCountry = "United States";
-    releaseDate = json['release_date'];    
-    overview = json['overview'];
-    backdropPath = URL_IMAGES + json['backdrop_path'];
+
+  MovieDetails({this.directorName, this.movieCountry, this.genres, this.cast, this.crew});
+
+  factory MovieDetails.fromJson(Map<String, dynamic> json){
+    return MovieDetails(
+      movieCountry: getMovieCountry(json),
+      genres: getGenres(json),
+      cast: json['credits'] != null ? getCast(json['credits']) : null,
+      crew: json['credits'] != null ? getCrew(json['credits']) : null,
+      directorName: json['credits']['crew'] != null ? getDirectorName(json['credits']) : 'Unknown'
+    );
   }
 
-  Future fillMovieDetail(Map<String, dynamic> json) async{
-    //TO-DO refactor to list in future
+  static String getDirectorName(Map<String, dynamic> json){    
+    String _directorName = 'Unknown';
+    for(var _crew in json['crew']){
+      if (_crew['job'] == 'Director'){
+        _directorName = _crew['name'];
+        break;
+      }
+    }    
+    return _directorName;
+  }
+
+  static String getMovieCountry(Map<String, dynamic> json){
+    return "Ajustar o pais";
+  }
+
+  static List<Genres> getGenres(Map<String, dynamic> json){
+    List<Genres> _genres = new List<Genres>();    
     if (json['genres'] != null) {
-      this.genres = new List<Genres>();
-      json['genres'].forEach((v) {
-        this.genres.add(new Genres.fromJson(v));
-      });
-
-      this.genres = genres;
+      _genres = json['genres'].map<Genres>(
+        (map){
+          return Genres.fromJson(map);
+        }
+      ).toList();      
     }
-    // Get team
-    if (json['credits'] != null) {
-      //Get cast
-      if (json['credits']['cast'] != null){
-        this.cast = new List<Cast>();
-        
-        json['credits']['cast'].forEach((v) {
-          this.cast.add(new Cast.fromJson(v));
-        });        
-      }
+    return _genres;
+  }
 
-      //Get crew
-      if (json['credits']['crew'] != null) {
-        this.crew = new List<Crew>();
-        json['credits']['crew'].forEach((v) {
-          this.crew.add(new Crew.fromJson(v));
-        });
+  static List<Cast> getCast(Map<String, dynamic> json){
+    // List<Cast> _cast = new List<Cast>();
+    if (json['cast'] != null){
+      List<Cast> _cast = json["cast"].map<Cast>(
+        (map){ 
+          return Cast.fromJson(map);         
+        }
+      ).toList();
 
-        this.directorName = (crew.firstWhere((c) => c.job == "Director", orElse: () => null) != null) 
-          ? crew.firstWhere((c) => c.job == "Director", orElse: () => null).name
-        : "Unknown"; 
-      }
-    }
+      return _cast;
+    }else{return null;}    
+  }
+
+  static List<Crew> getCrew(Map<String, dynamic> json){
+    if (json['crew'] != null){
+      // List<Crew> _crew = json['crew'].map<Crew>(
+      //   (map){
+      //     return new Crew.fromJson(map);
+      //   }
+      // ).toList;
+
+      List<Crew> _crew = json["crew"].map<Crew>(
+        (map){ 
+          return Crew.fromJson(map);         
+        }
+      ).toList();
+
+
+
+      return _crew;
+    }else return null;
   }
 }

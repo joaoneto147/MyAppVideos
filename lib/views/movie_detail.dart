@@ -14,25 +14,26 @@ final iconTextStyle = const TextStyle(color: Colors.blue);
 final bodySynopsisTextStyle = const TextStyle(color: Colors.grey);
 
 class MovieDetail extends StatefulWidget {
-  final heroTag;
+  final movieIndex;
+  final movieController;
 
-  MovieDetail({this.heroTag});
+  MovieDetail({this.movieController, this.movieIndex});
 
   @override
   _MovieDetailState createState() => _MovieDetailState();
 }
 
 class _MovieDetailState extends State<MovieDetail> {
-  MovieController _movieController;
+  // MovieController _movieController;
   Movie _movie;
   double movieWidth;
   double movieHeight;
 
-  @override
-  void initState() {
-    super.initState();
-    _movieController = GetIt.instance<MovieController>();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _movieController = GetIt.instance<MovieController>();
+  // }
 
   Widget detailsMovie() {
     return Container(
@@ -43,8 +44,8 @@ class _MovieDetailState extends State<MovieDetail> {
           image: _movie.image,
           title: _movie.title,
           rating: _movie.rating,
-          movieCountry: _movie.movieCountry,
-          directorName: _movie.directorName),
+          movieCountry: _movie.details.movieCountry,
+          directorName: _movie.details.directorName),
     );
   }
 
@@ -128,9 +129,9 @@ class _MovieDetailState extends State<MovieDetail> {
                   Container(
                     height: 160,
                     width: 120,
-                    child: _movie.cast[index].profilePath != null
+                    child: _movie.details.cast[index].profilePath != null
                         ? FadeInImage(
-                          image: NetworkImage(_movie.cast[index].profilePath),
+                          image: NetworkImage(_movie.details.cast[index].profilePath),
                           fit: BoxFit.cover,
                           placeholder: AssetImage('images/loading.gif'),
                         )
@@ -138,14 +139,14 @@ class _MovieDetailState extends State<MovieDetail> {
                             fit: BoxFit.fill),
                   ),
                   Text(
-                    _movie.cast[index].name,
+                    _movie.details.cast[index].name,
                     textAlign: TextAlign.start,
                     style: bodySynopsisTextStyle,
                   )
                 ],
               );
             },
-            itemCount: _movie.cast.length,
+            itemCount: _movie.details.cast.length,
           ),
         )
       ],
@@ -189,7 +190,7 @@ class _MovieDetailState extends State<MovieDetail> {
 
   @override
   Widget build(BuildContext context) {
-    _movie = _movieController.getMovie(widget.heroTag);
+    _movie = widget.movieController.getMovie(widget.movieIndex);
     movieWidth = MediaQuery.of(context).size.width;
     movieHeight = MediaQuery.of(context).size.height;
     return Scaffold(

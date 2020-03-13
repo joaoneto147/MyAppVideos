@@ -9,48 +9,33 @@ part of 'movie_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$MovieController on _MovieControllerBase, Store {
-  final _$apiAtom = Atom(name: '_MovieControllerBase.api');
+  final _$moviesAtom = Atom(name: '_MovieControllerBase.movies');
 
   @override
-  MovieApi get api {
-    _$apiAtom.context.enforceReadPolicy(_$apiAtom);
-    _$apiAtom.reportObserved();
-    return super.api;
+  List<Movie> get movies {
+    _$moviesAtom.context.enforceReadPolicy(_$moviesAtom);
+    _$moviesAtom.reportObserved();
+    return super.movies;
   }
 
   @override
-  set api(MovieApi value) {
-    _$apiAtom.context.conditionallyRunInAction(() {
-      super.api = value;
-      _$apiAtom.reportChanged();
-    }, _$apiAtom, name: '${_$apiAtom.name}_set');
+  set movies(List<Movie> value) {
+    _$moviesAtom.context.conditionallyRunInAction(() {
+      super.movies = value;
+      _$moviesAtom.reportChanged();
+    }, _$moviesAtom, name: '${_$moviesAtom.name}_set');
   }
 
-  final _$fetchMoviesRankedAsyncAction = AsyncAction('fetchMoviesRanked');
+  final _$getMoviesRankedAsyncAction = AsyncAction('getMoviesRanked');
 
   @override
-  Future fetchMoviesRanked() {
-    return _$fetchMoviesRankedAsyncAction.run(() => super.fetchMoviesRanked());
-  }
-
-  final _$loadMoviesTrendingAsyncAction = AsyncAction('loadMoviesTrending');
-
-  @override
-  Future<MovieApi> loadMoviesTrending() {
-    return _$loadMoviesTrendingAsyncAction
-        .run(() => super.loadMoviesTrending());
-  }
-
-  final _$loadDetailMovieAsyncAction = AsyncAction('loadDetailMovie');
-
-  @override
-  Future<MovieApi> loadDetailMovie() {
-    return _$loadDetailMovieAsyncAction.run(() => super.loadDetailMovie());
+  Future getMoviesRanked(int page) {
+    return _$getMoviesRankedAsyncAction.run(() => super.getMoviesRanked(page));
   }
 
   @override
   String toString() {
-    final string = 'api: ${api.toString()}';
+    final string = 'movies: ${movies.toString()}';
     return '{$string}';
   }
 }
