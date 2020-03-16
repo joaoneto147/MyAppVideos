@@ -1,43 +1,36 @@
-import 'package:my_app/models/movie_model.dart';
-
 const MOVIE_DB_API_KEY = 'YOU_API_KEY';
+const YOUTUBE_API_KEY = 'YOU_API_KEY';
 const URL_BASE = 'https://api.themoviedb.org/3/';
 
-const URL_TRENDING = URL_BASE + "trending/movie/week" + "?api_key=" + MOVIE_DB_API_KEY + "&language=pt-BR" + "&include_image_language=en,pt,null";
-const URL_POPULAR_MOVIE = URL_BASE + "movie/popular" + "?api_key=" + MOVIE_DB_API_KEY + "&language=pt-BR" + "&page=1" + "&region=BR";
 const URL_MOVIE = URL_BASE + "movie/";
 
-String getURL(String urlBase, List<String> paramters){
-  bool firstParamter = true;
-  String _paramter = "";
-  
-  paramters.forEach((f){
-    _paramter = _paramter + (firstParamter ? "?" : "&") + f;
-    firstParamter = false;
-  });
+String getURL(String urlBase, List<String> paramters) {
+  String _paramter = '?api_key=$MOVIE_DB_API_KEY';
 
-  print("Realizando consulta no endpoint: " + urlBase + _paramter);
+  paramters.forEach((f) {
+    _paramter = _paramter + "&" + f;
+  });  
   return urlBase + _paramter;
 }
 
-
 class MovieApi {
-  List<Movie> movie;
-
-  MovieApi({this.movie});
-
-  MovieApi.fromJson(Map<String, dynamic> json) {
-    if (json['results'] != null) {
-      movie = new List<Movie>();
-      json['results'].forEach((v) {
-        movie.add(new Movie.fromJson(v));
-      });
-    }  
+  static String upComingMovies(int page) {
+    return getURL(URL_MOVIE + "upcoming", ['language=pt-BR', 'page=$page', 'region=BR']);
   }
 
+  static String moviesRanked(int page) {
+    return getURL(URL_MOVIE + 'top_rated', ['language=pt-BR', 'page=$page', 'region=BR']);       
+  }
 
-  Future getDetailsFromJson(Map<String, dynamic> json, Movie movie) async {
-    await movie.fillMovieDetail(json);
+  static String popularMovies(int page) {
+    return getURL(URL_MOVIE + 'popular', ['language=pt-BR', 'page=$page', 'region=BR']);        
+  }
+
+  static String nowPlaying(int page) {
+    return getURL(URL_MOVIE + 'now_playing', ['language=pt-BR', 'page=$page', 'region=BR']);        
+  }
+
+  static String movieDatails(int movieId) {
+    return getURL(URL_MOVIE + '$movieId', ['language=pt-BR', 'append_to_response=credits,videos']);
   }  
 }
-

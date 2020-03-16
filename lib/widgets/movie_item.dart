@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/widgets/widget.dart';
 import 'package:rating_bar/rating_bar.dart';
 
 final baseTextStyle = const TextStyle(fontFamily: 'Poppins');
@@ -27,20 +28,14 @@ class MovieDetailWidget extends StatelessWidget {
 
   Widget movieThumbnail() {
     return Container(
-        margin: EdgeInsets.symmetric(horizontal: 10),
+        margin: EdgeInsets.symmetric(horizontal: 15),
         child: Column(
           children: <Widget>[
             Container(
               height: 150,
-              width: 120,
-              child: FadeInImage(placeholder: AssetImage('images/loading.gif'), image: NetworkImage(image)),
-              // decoration: BoxDecoration(
-              //   image: DecorationImage(
-              //     image: NetworkImage(image)
-              //   )
+              width: 105,
+              child: getPosterMovie(image)
             ),
-            // ),
-
             SizedBox(height: 10)
           ],
         ));
