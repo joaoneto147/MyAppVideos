@@ -1,5 +1,12 @@
 import 'package:my_app/commons/consts.dart';
 
+enum TypeQueryMovie {
+  popularMovie,
+  playNowMovie,
+  cominSonMovie,
+  topRated
+}
+
 class Genres {
   int id;
   String name;
@@ -125,7 +132,7 @@ class Movie{
       rating : double.parse(json['vote_average'].toString()),
       releaseDate : json['release_date'],
       overview : json['overview'],
-      backdropPath : URL_IMAGES + json['backdrop_path']
+      backdropPath : (json['backdrop_path'] != null ? URL_IMAGES + json['backdrop_path'] : '')
     );
   }
 }
@@ -136,8 +143,9 @@ class MovieDetails {
   List<Genres> genres;
   List<Cast> cast;
   List<Crew> crew;
+  List<TrailerMovie> trailers;
 
-  MovieDetails({this.directorName, this.movieCountry, this.genres, this.cast, this.crew});
+  MovieDetails({this.directorName, this.movieCountry, this.genres, this.cast, this.crew, this.trailers});
 
   factory MovieDetails.fromJson(Map<String, dynamic> json){
     return MovieDetails(
@@ -145,7 +153,8 @@ class MovieDetails {
       genres: getGenres(json),
       cast: json['credits'] != null ? getCast(json['credits']) : null,
       crew: json['credits'] != null ? getCrew(json['credits']) : null,
-      directorName: json['credits']['crew'] != null ? getDirectorName(json['credits']) : 'Unknown'
+      directorName: json['credits']['crew'] != null ? getDirectorName(json['credits']) : 'Unknown',
+      trailers: json['videos'] != null ? getTrailers(json['videos']) : null
     );
   }
 
@@ -176,8 +185,7 @@ class MovieDetails {
     return _genres;
   }
 
-  static List<Cast> getCast(Map<String, dynamic> json){
-    // List<Cast> _cast = new List<Cast>();
+  static List<Cast> getCast(Map<String, dynamic> json){    
     if (json['cast'] != null){
       List<Cast> _cast = json["cast"].map<Cast>(
         (map){ 
@@ -191,21 +199,49 @@ class MovieDetails {
 
   static List<Crew> getCrew(Map<String, dynamic> json){
     if (json['crew'] != null){
-      // List<Crew> _crew = json['crew'].map<Crew>(
-      //   (map){
-      //     return new Crew.fromJson(map);
-      //   }
-      // ).toList;
-
       List<Crew> _crew = json["crew"].map<Crew>(
         (map){ 
           return Crew.fromJson(map);         
         }
       ).toList();
-
-
-
       return _crew;
     }else return null;
+  }
+
+  static List<TrailerMovie> getTrailers(Map<String, dynamic> json){    
+    if (json['results'] != null){
+      List<TrailerMovie> _trailers = json["results"].map<TrailerMovie>(
+        (map){ 
+          return TrailerMovie.fromJson(map);         
+        }
+      ).toList();
+
+      return _trailers;
+    }else{return null;}    
+  }
+}
+
+class TrailerMovie {
+  String id;  
+  String key;
+  String name;
+  String site;
+  String type;
+
+  TrailerMovie(
+      {this.id,
+      this.key,
+      this.name,
+      this.site,
+      this.type});
+
+  factory TrailerMovie.fromJson(Map<String, dynamic> json) {
+    return TrailerMovie(    
+      id : json['id'],
+      key : json['key'],
+      name : json['name'],
+      site : json['site'],
+      type : json['type']
+    );    
   }
 }

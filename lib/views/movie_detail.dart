@@ -1,6 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:my_app/commons/styles.dart';
 import 'package:my_app/controllers/movie_controller.dart';
 import 'package:my_app/models/movie_model.dart';
 import 'package:my_app/widgets/movie_item.dart';
@@ -24,16 +25,9 @@ class MovieDetail extends StatefulWidget {
 }
 
 class _MovieDetailState extends State<MovieDetail> {
-  // MovieController _movieController;
   Movie _movie;
   double movieWidth;
   double movieHeight;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _movieController = GetIt.instance<MovieController>();
-  // }
 
   Widget detailsMovie() {
     return Container(
@@ -104,8 +98,7 @@ class _MovieDetailState extends State<MovieDetail> {
   Widget textTitle(String text) {
     return Text(
       text,
-      style: TextStyle(fontSize: 25, color: Colors.white),
-      textAlign: TextAlign.start,
+      style: textStyleTitles()
     );
   }
 

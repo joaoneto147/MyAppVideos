@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:my_app/controllers/movie_controller.dart';
+import 'package:my_app/models/movie_model.dart';
+import 'package:my_app/widgets/widget.dart';
 import 'package:my_app/widgets/movie_item.dart';
 
 import 'movie_detail.dart';
@@ -22,7 +24,7 @@ class _RankingState extends State<Ranking> {
     super.initState();
     _movieController = MovieController();
     if (_movieController.movies == null) {      
-      _movieController.getMoviesRanked(1);
+      _movieController.executeQuery(TypeQueryMovie.topRated);
     }
   }  
 
@@ -35,62 +37,7 @@ class _RankingState extends State<Ranking> {
         child: Column(
           children: <Widget>[
             SizedBox(height: 30),
-            Container(               
-              margin: const EdgeInsets.symmetric(                
-                horizontal: 10.0,
-              ),
-              child: Row(                            
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: Text(                      
-                      "Ranking",                      
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 40
-                      ),
-                    ),
-                  ), 
-                  Expanded(                    
-                    child: Container(
-                      width: 40,                      
-                      height: 30,  
-                      decoration: new BoxDecoration(
-                        color: new Color(0XFF1E2747),    
-                        shape: BoxShape.rectangle,
-                        borderRadius: new BorderRadius.circular(3.0)
-                      ),
-                      child: Row(                        
-                        children: <Widget>[
-                          Icon(Icons.search, color: Colors.grey),
-                          Expanded(                            
-                            child: TextField(
-                              textAlign: TextAlign.start,
-                              expands: false,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 20
-                                ),
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(vertical: 8),
-                                border: InputBorder.none,                                                            
-                                hintText: "Search",
-                                hintStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 20
-                                )
-                              )
-                            )
-                          )
-                        ],
-                      ),
-                    )
-                  )
-                ],
-              ),
-            ),
-            
+            ToolbarCustom(title: 'Ranking'),            
             Expanded(              
               child: Observer(
                 name: 'pagehome',
@@ -133,8 +80,4 @@ class _RankingState extends State<Ranking> {
       ),
     );
   }
-
-  
-
-  
 }

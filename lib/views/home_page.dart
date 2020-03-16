@@ -4,21 +4,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:my_app/controllers/home_page_controller.dart';
 
-//temp view
-class Yellow extends StatefulWidget {
-  @override
-  _YellowState createState() => _YellowState();
-}
-
-class _YellowState extends State<Yellow> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.yellowAccent,
-    );
-  }
-}
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,8 +20,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    print("object");
+  Widget build(BuildContext context) {    
     return Observer(
       name: "PageIndex",
       builder: (_) => Scaffold(
@@ -59,7 +43,7 @@ class _HomePageState extends State<HomePage> {
                 title: Text("Ranking"),
                 icon: Icon(CommunityMaterialIcons.crown)),
             BottomNavigationBarItem(
-                title: Text("Feed"), icon: Icon(CommunityMaterialIcons.crown)),
+                title: Text("Trailers"), icon: Icon(CommunityMaterialIcons.movie)),
             BottomNavigationBarItem(
               title: Text("More"),
               icon: Icon(Icons.person),

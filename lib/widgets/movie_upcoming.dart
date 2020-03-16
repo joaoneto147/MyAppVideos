@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:my_app/controllers/movie_controller.dart';
 import 'package:my_app/views/movie_detail.dart';
+import 'package:my_app/models/movie_model.dart';
 
 import 'movie_item.dart';
 
@@ -10,7 +11,7 @@ class MovieUpComingList extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
-    _movieController.getMoviesUpComing();
+    _movieController.executeQuery(TypeQueryMovie.cominSonMovie);
     return 
       Observer(
         name: 'pagehome',

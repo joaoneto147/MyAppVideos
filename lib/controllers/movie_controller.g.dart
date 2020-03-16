@@ -26,11 +26,25 @@ mixin _$MovieController on _MovieControllerBase, Store {
     }, _$moviesAtom, name: '${_$moviesAtom.name}_set');
   }
 
-  final _$getMoviesRankedAsyncAction = AsyncAction('getMoviesRanked');
+  final _$getMoviesAsyncAction = AsyncAction('getMovies');
 
   @override
-  Future getMoviesRanked(int page) {
-    return _$getMoviesRankedAsyncAction.run(() => super.getMoviesRanked(page));
+  Future getMovies(String url, TypeQueryMovie typeQueryMovie) {
+    return _$getMoviesAsyncAction
+        .run(() => super.getMovies(url, typeQueryMovie));
+  }
+
+  final _$_MovieControllerBaseActionController =
+      ActionController(name: '_MovieControllerBase');
+
+  @override
+  dynamic executeQuery(TypeQueryMovie typeQueryMovie) {
+    final _$actionInfo = _$_MovieControllerBaseActionController.startAction();
+    try {
+      return super.executeQuery(typeQueryMovie);
+    } finally {
+      _$_MovieControllerBaseActionController.endAction(_$actionInfo);
+    }
   }
 
   @override
